@@ -4,7 +4,7 @@ provider "aws" {
   }
 # generate randomised names
 resource "random_id" "random_id_generator" {
-    byte_length = 8
+    byte_length = 8    
 }
 
 #------------------- STEP FUNCTION TO TRIGGER GLUE JOB ------------------------#
@@ -20,7 +20,7 @@ resource "random_id" "random_id_generator" {
 #   endpoint  = "umamudkhede@gmail.com"
 # }
 
-variable "topic_arn" {
+variable "topic_arn" {   
   description = "topic arn for sns"
   type        = string
   default     = "arn:aws:sns:us-east-1:739294697170:glue_job_notification_topic"
