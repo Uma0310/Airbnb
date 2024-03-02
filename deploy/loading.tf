@@ -1,0 +1,50 @@
+
+# # ####------------------------GLUE DATA-CATALOG & CRAWLER-------------------------------------------####
+
+# defining database
+resource "aws_glue_catalog_database" "RentalMarket" {
+    name = "rental_market_database"
+}
+
+resource "aws_glue_classifier" "csv_classifier" {
+  name          = "CustomCSVClassifier"
+  
+  csv_classifier {
+
+    allow_single_column    = false
+    contains_header        = "UNKNOWN"  # Automatic detection of headers
+    delimiter              = ","
+    disable_value_trimming = false
+    quote_symbol           = "'"
+  
+  }
+}
+
+
+resource "aws_glue_crawler" "rental_market_analysis" {
+    name          = "rental_market_analysis_crawler"
+    role          = "arn:aws:iam::739294697170:role/LabRole"
+    database_name = aws_glue_catalog_database.RentalMarket.name  # Corrected reference
+
+    s3_target {
+      path = "s3://final-044/umamudkhede/" 
+    }
+    tags = {
+        product_type = "rental_market_analysis"
+    }
+    classifiers = [aws_glue_classifier.csv_classifier.name]
+}    
+
+
+####-------------------------------- Athena ------------------------------------------####
+resource "aws_athena_workgroup" "rental_market_analysis_workgroup" {
+  name = "rental_market_analysis_workgroup"
+  force_destroy = true
+
+configuration {
+    result_configuration {
+        output_location = "s3://final-044/queryResult/"
+    }
+
+  }
+}
